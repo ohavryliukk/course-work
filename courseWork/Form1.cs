@@ -412,5 +412,63 @@ namespace courseWork
             }
             pictureBox1.Image = adjustedImage;
         }
+
+        private String GetFileType(string file)
+        {
+            string extension = Path.GetExtension(file);
+            System.Diagnostics.Debug.WriteLine("extension: " + extension);
+            string mime;
+            switch (extension.ToLower())
+            {
+                case ".jpg":
+                    mime = "image/jpeg";
+                    break;
+                case ".jpeg":
+                    mime = "image/jpeg";
+                    break;
+                case ".png":
+                    mime = "image/png";
+                    break;
+                case ".doc":
+                    mime = "application/msword";
+                    break;
+                case ".pdf":
+                    mime = "application/pdf";
+                    break;
+                default:
+                    mime = "text/plain";
+                    break;
+            }
+            return mime;
+        }
+
+        private void btn_upload_Click(object sender, EventArgs e)
+        {
+
+            GoogleDriveService driveUploader = new GoogleDriveService(json_secret_file, application_name);
+            MemoryStream stream = new MemoryStream();
+            System.Diagnostics.Debug.WriteLine(txt_imgpath.Text);
+            try
+            {
+                img = pictureBox1.Image;
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                byte[] byteArray = stream.ToArray();
+
+                string filePath = txt_imgpath.Text;
+                string fileName = txt_imgpath.Text;
+                string fileType = GetFileType(filePath);
+                driveUploader.UploadFile(ref byteArray, fileName, fileType);
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+            }
+        }
+
+        private void btn_saveInfo_Click(object sender, EventArgs e)
+        {
+            img = pictureBox1.Image;
+            PropertyItem title = img.GetPropertyItem(0x0320);
+        }
     }
 }
